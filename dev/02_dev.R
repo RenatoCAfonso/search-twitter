@@ -91,6 +91,17 @@ usethis::use_jenkins()
 # GitLab CI
 usethis::use_gitlab_ci()
 
+# Dependences
+usethis::use_package("httr")
+usethis::use_package("jsonlite")
+usethis::use_package("dplyr")
+usethis::use_pipe()
+usethis::use_package("stringr")
+usethis::use_package("parsedate")
+usethis::use_package("DT")
+usethis::use_package("shinythemes")
+
+
 # You're now set! ----
 # go to dev/03_deploy.R
 rstudioapi::navigateToFile("dev/03_deploy.R")
