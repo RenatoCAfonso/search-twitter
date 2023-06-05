@@ -7,6 +7,7 @@
 #' @noRd
 
 app_ui <- function(request) {
+  shinyjs::useShinyjs()
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
@@ -22,26 +23,44 @@ app_ui <- function(request) {
 
       ######### INPUT FOR PRIMARY LIST
       fluidRow(
-        column(6, offset=3, align="center",
-               textAreaInput("l1", h3("Primary List"), width ='100%', rows=4,value = 'som, barulho, ruído, zoada, zumbido, burburinho'),
+        column(6, offset=3, align = "left",
+               h3("Search", actionButton("btnInfo", "?", class = "btn btn-success btn-xs", style = "margin-left: 10px;")),
+
+        ),
+        tags$div(id = "modalText")
+      ),
+
+      fluidRow(
+        column(6, offset = 3, align = "left",
+               textAreaInput("l1", NULL, width = "100%", rows = 1, value = "som, barulho, ruído, zoada, zumbido, burburinho")
         )
       ),
 
       ######### INPUT FOR SECUNDARY LIST
       fluidRow(
-        column(6, offset=3, align="center",
-               textAreaInput("l2", h3("Secondary List"), width ='100%', rows=4, value = 'agitado, movimento, dinâmica, conturbado, interessante, vibrante, animado, intenso, excitante, alegre,  agradavel, prazeroso,  aprazivel, acolhedor, ameno, calmo, tranquilo, sereno, sossegado, pacífico, rotineiro, parado, comum, corriqueiro, pacato, monótono, entediante, tedioso, maçante, sem graça, irritante,  desagradavel,  incomodo, chato, perturbador,  caotico, confuso, bagunçado, desorganizado, desordenado'),
+        column(6, offset=3, align="left",
+               radioButtons("showBtn", "Add permutations",
+                            choices = c("Yes" = 'Sim', "No" = "Não"),
+                            selected = "Não",
+                            inline = TRUE,)
+        ),
+      ),
+      conditionalPanel(
+        condition = "input.showBtn == 'Sim'",
+        fluidRow(
+          column(6, offset=3, align="leftr",
+                 textAreaInput("l2", h3("Permutation with"), width ='100%', rows=1, value = 'agitado, movimento, dinâmica, conturbado, interessante, vibrante, animado, intenso, excitante, alegre,  agradavel, prazeroso,  aprazivel, acolhedor, ameno, calmo, tranquilo, sereno, sossegado, pacífico, rotineiro, parado, comum, corriqueiro, pacato, monótono, entediante, tedioso, maçante, sem graça, irritante,  desagradavel,  incomodo, chato, perturbador,  caotico, confuso, bagunçado, desorganizado, desordenado'),
+          ),
         ),
       ),
 
       ######### INPUT FOR LANG
       fluidRow(
-        column(12, align="center",
-               br(),
+        column(6, offset = 3, align="left",
                br(),
                radioButtons(
                  "lang",
-                 h3("Data Language"),
+                 h3("Data language"),
                  choices = c("Portuguese - pt", "English - en", "Spanish - es"),
                  selected = NULL,
                  inline = TRUE,
@@ -54,11 +73,11 @@ app_ui <- function(request) {
 
       ############ INPUT FOR START_TIME AND END_TIME
       fluidRow(
-        column(12, align="center",
+        column(6, offset = 3, align="left",
                br(),
                dateRangeInput(
                  "date",
-                 h3("Date Range"),
+                 h3("Date range"),
                  start  = Sys.Date() - 90,
                  end    = Sys.Date()
                )
@@ -67,9 +86,9 @@ app_ui <- function(request) {
 
       ######### INPUT FOR TOKEN
       fluidRow(
-        column(12, align="center",
+        column(6, offset = 3, align="leftr",
                br(),
-               textAreaInput("token", label = h3("Bearer Token"), width=920, rows=1, value = ""),
+               textAreaInput("token", label = h3("Bearer token"), width=920, rows=1, value = ""),
         )
       ),
 
@@ -79,7 +98,6 @@ app_ui <- function(request) {
                br(),
                br(),
                actionButton("get", h4("Get data")),
-               downloadButton("downloadData", "Download")
         )
       ),
 
@@ -88,6 +106,16 @@ app_ui <- function(request) {
                column(10, offset=1,
                       br(),
                       DT::dataTableOutput("table")
+               )
+      ),
+
+      ######### DOWNLOAD BUTTON
+      fluidRow(align="center",
+               column(10, offset=1,
+                      br(),
+                      uiOutput("downloadButton"),
+                      br(),
+                      br()
                )
       )
     )

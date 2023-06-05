@@ -3,16 +3,57 @@
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
 #' @import shiny
-#' @import %>%
 #' @noRd
 app_server <- function(input, output, session) {
+
+  ## Modal for instructions
+  observeEvent(input$btnInfo, {
+    showModal(modalDialog(
+      title = h3("Search instructions"),
+      ## Text content
+      p("This Web Application was developed for a PhD project coordinated by researcher Nara from the Faculty of Architecture and Urbanism at the University of São Paulo, Brazil."),
+      p("We are utilizing the Twitter API with academic research access to extract tweets within a designated time frame. Consequently, it is imperative to possess a Bearer Token that corresponds to the same account type in order to access our system."),
+      br(),
+      p(h5("Search input characteristics:")),
+      p(tags$b("Search: "), span("include search terms - by separating the words with commas, it is possible to search for each term individually - does not accept empty field.")),
+      p("Examples:"),
+      p("1- Books"),
+      p("tweets with the term 'book' will be searched."),
+      p("2-Books, recipes:"),
+      p("tweets with the term 'books' will be searched, followed by tweets with the term 'recipes'."),
+      p("Default: som, barulho, ruído, zoada, zumbido, burburinho"),
+      br(),
+      p(tags$b("Add Permutations: "), span("include terms to permute with the main search term - similarly, separate each word with a comma to perform separate queries.")),
+      p("Examples:"),
+      p("1 - Main query: Books, recipes"),
+      p("permute with cake, pie"),
+      p("Search results: (Book and cake) or (Book and pie) or (recipes and cake) or (recipes and pie)"),
+      p("Default: agitado, movimento, dinâmica, conturbado, interessante, vibrante, animado, intenso, excitante, alegre,  agradavel, prazeroso,  aprazivel, acolhedor, ameno, calmo, tranquilo, sereno, sossegado, pacífico, rotineiro, parado, comum, corriqueiro, pacato, monótono, entediante, tedioso, maçante, sem graça, irritante,  desagradavel,  incomodo, chato, perturbador,  caotico, confuso, bagunçado, desorganizado, desordenado"),
+      footer = tagList(
+        actionButton("btnClose", "Ok", class = "btn btn-primary")
+      ),
+      easyClose = TRUE,
+
+    ))
+  })
+
+  ## Close modal
+  observeEvent(input$btnClose, {
+    removeModal()
+  })
+
+
   observeEvent(input$get, {
 
     ################# GET INPUT FIELDS - LISTS, END_TIME AND START_TIME
     x <- input$l1
     pri<- stringr::str_trim(strsplit(x,",")[[1]])
     y <- input$l2
-    sec<- stringr::str_trim(strsplit(y,",")[[1]])
+    if(y != "" & input$showBtn == "Sim"){
+      sec<- stringr::str_trim(strsplit(y,",")[[1]])
+    } else{
+      sec<- ""
+    }
     marcador <- length(sec)
     data = NULL
 
@@ -23,6 +64,12 @@ app_server <- function(input, output, session) {
 
         dados = FALSE
         query_search <- paste0('("', pri[1], ' ' , i, '"')
+
+        #### Exist if primary list is empty
+        if(x==""){
+          showNotification("Erro: Não existem dados disponíveis para os parâmetros da consulta.", type = "error")
+          return()
+        }
 
         #### COMBINE FIRST LIST WITH SECOND LIST
         for (j in pri[-1]){
@@ -41,7 +88,7 @@ app_server <- function(input, output, session) {
         bearer_token <- as.character(Sys.getenv("BEARER_TOKEN"))
         headers <- c(`Authorization` = c(sprintf('Bearer %s', bearer_token)))
         go<-TRUE
-        incProgress(0, detail = paste("Doing part", i))
+        incProgress(0, detail = paste("Doing", i))
 
 
         ############ START REQUISITIONS - LOOP #################################
@@ -127,7 +174,14 @@ app_server <- function(input, output, session) {
 
         showNotification("Erro: Não existem dados disponíveis para os parâmetros da consulta.", type = "error")
 
+      } else {
+
+        output$downloadButton <- renderUI({
+          downloadButton("downloadData", "Download")
+        })
+
       }
+
 
     })
 
@@ -149,4 +203,5 @@ app_server <- function(input, output, session) {
     )
 
   })
+
 }
