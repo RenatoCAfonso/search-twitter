@@ -1,0 +1,13 @@
+name: searchTwitter
+title: searchTwitter
+username:
+account: renato-campos-afonso
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9245621
+bundleId: 7303975
+url: https://renato-campos-afonso.shinyapps.io/searchTwitter/
+when: 1685923260.08312
+lastSyncTime: 1685923260.08315
+asMultiple: FALSE
+asStatic: FALSE
