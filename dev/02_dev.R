@@ -100,6 +100,7 @@ usethis::use_package("stringr")
 usethis::use_package("parsedate")
 usethis::use_package("DT")
 usethis::use_package("shinythemes")
+usethis::use_package("shinyjs")
 
 
 # You're now set! ----
