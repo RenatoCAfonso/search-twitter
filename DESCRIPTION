@@ -13,7 +13,9 @@ Imports:
     jsonlite,
     magrittr,
     parsedate,
+    pkgload,
     shiny (>= 1.7.4),
+    shinyjs,
     shinythemes,
     stringr
 Encoding: UTF-8
